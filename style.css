@@ -186,9 +186,38 @@ input[type="number"] {
   color: var(--white);
 }
 
+/* SPOTIFY CARD */
+.spotify-card {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  padding: 8px;
+}
+
+.spotify-track-info {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--white);
+  margin: 6px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spotify-controls {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.spotify-controls button {
+  flex: 1;
+  font-size: 0.65rem;
+}
+
 /* COLLAPSIBLE MATH CARD */
 .math-card {
-  margin-top: 14px;
+  margin-top: 10px;
   padding: 8px;
   background: var(--bg);
   border: 1px solid var(--border);

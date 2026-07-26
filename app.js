@@ -1,7 +1,7 @@
 /**
  * LOGBOOK — ULTRA CONCISE (TBJP / IMMACULATE FORM)
  * Standard: 1 RIR across all worksets
- * Includes GitHub REST API Auto-Sync Engine
+ * Includes GitHub REST API Auto-Sync Engine & Spotify Music Integration
  */
 
 const GITHUB_REPO_OWNER = 'g77111125';
@@ -137,6 +137,7 @@ let expandedShrugSet = {};
 let isWorkSetsExpanded = false;
 let sessionTimerInterval = null;
 let sessionSeconds = 0;
+let spotifyToken = null;
 
 function formatWorkSetLabel(workSetIndex) {
   return `WORKSET ${workSetIndex}`;
@@ -480,9 +481,115 @@ document.addEventListener('DOMContentLoaded', () => {
   initLogPanel();
   initExportImport();
   initGitHubSync();
+  initSpotifyController();
   startSessionTimer();
   renderSelectedDate();
 });
+
+/* Spotify Music Integration */
+function initSpotifyController() {
+  const btnToggle = document.getElementById('btn-spotify-toggle');
+  const spCard = document.getElementById('spotify-card');
+
+  if (btnToggle && spCard) {
+    btnToggle.onclick = () => {
+      const isVisible = spCard.style.display !== 'none';
+      spCard.style.display = isVisible ? 'none' : 'block';
+    };
+  }
+
+  spotifyToken = localStorage.getItem('tbjp_spotify_token');
+  const btnConnect = document.getElementById('btn-spotify-login');
+
+  if (spotifyToken && btnConnect) {
+    btnConnect.textContent = '[CONNECTED]';
+    fetchSpotifyCurrentlyPlaying();
+  }
+
+  if (btnConnect) {
+    btnConnect.onclick = () => {
+      const inputVal = prompt(
+        '[SPOTIFY API SETUP]\n\nPaste your Spotify Web API Token or Playlist URL:\n(Leave blank to reset embedded player)',
+        spotifyToken || ''
+      );
+
+      if (inputVal === null) return;
+
+      if (inputVal.includes('spotify.com/playlist/') || inputVal.includes('spotify.com/album/')) {
+        const match = inputVal.match(/(playlist|album|track)\/([a-zA-Z0-9]+)/);
+        if (match) {
+          const type = match[1];
+          const id = match[2];
+          const iframe = document.getElementById('spotify-iframe');
+          if (iframe) {
+            iframe.src = `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
+          }
+          alert('[SPOTIFY] PLAYLIST EMBED UPDATED!');
+        }
+      } else if (inputVal.trim() !== '') {
+        spotifyToken = inputVal.trim();
+        localStorage.setItem('tbjp_spotify_token', spotifyToken);
+        btnConnect.textContent = '[CONNECTED]';
+        fetchSpotifyCurrentlyPlaying();
+      } else {
+        localStorage.removeItem('tbjp_spotify_token');
+        spotifyToken = null;
+        btnConnect.textContent = '[CONNECT]';
+        document.getElementById('spotify-track-name').textContent = '[NO ACTIVE PLAYBACK]';
+      }
+    };
+  }
+
+  // Spotify Controls (Web API)
+  document.getElementById('sp-play').onclick = () => spotifyControlCall('play');
+  document.getElementById('sp-next').onclick = () => spotifyControlCall('next');
+  document.getElementById('sp-prev').onclick = () => spotifyControlCall('previous');
+}
+
+async function spotifyControlCall(endpoint) {
+  if (!spotifyToken) {
+    alert('[SPOTIFY] Please click [CONNECT] above to enter your Spotify Access Token or Playlist link.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`https://api.spotify.com/v1/me/player/${endpoint}`, {
+      method: endpoint === 'play' ? 'PUT' : 'POST',
+      headers: { 'Authorization': `Bearer ${spotifyToken}` }
+    });
+
+    if (res.status === 204 || res.status === 200) {
+      setTimeout(fetchSpotifyCurrentlyPlaying, 500);
+    } else {
+      alert(`[SPOTIFY API] Control response: ${res.status}`);
+    }
+  } catch (err) {
+    console.error('Spotify API Error:', err);
+  }
+}
+
+async function fetchSpotifyCurrentlyPlaying() {
+  if (!spotifyToken) return;
+
+  try {
+    const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers: { 'Authorization': `Bearer ${spotifyToken}` }
+    });
+
+    if (res.status === 200) {
+      const data = await res.json();
+      if (data && data.item) {
+        const artist = data.item.artists.map(a => a.name).join(', ');
+        const track = data.item.name;
+        document.getElementById('spotify-track-name').textContent = `▶ ${track.toUpperCase()} — ${artist.toUpperCase()}`;
+      }
+    } else if (res.status === 401) {
+      document.getElementById('spotify-track-name').textContent = '[TOKEN EXPIRED — CLICK CONNECT]';
+    }
+  } catch (err) {
+    console.warn('Spotify fetch error:', err);
+  }
+}
 
 /* GitHub REST API Auto-Sync Engine */
 function updateSyncBadge(statusText) {
