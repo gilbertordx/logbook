@@ -1,7 +1,7 @@
 /**
  * LOGBOOK — ULTRA CONCISE (TBJP / IMMACULATE FORM)
  * Standard: 1 RIR across all worksets
- * Includes GitHub REST API Auto-Sync Engine & Spotify Algorithmic AI Vibe Engine
+ * Includes GitHub REST API Auto-Sync Engine & Spotify Music Integration
  */
 
 const GITHUB_REPO_OWNER = 'g77111125';
@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSelectedDate();
 });
 
-/* Spotify 1-Click OAuth & AI Algorithmic Personalization Engine */
+/* Spotify 1-Click OAuth Integration (Zero-Fluff) */
 function handleSpotifyAuthCallback() {
   const hash = window.location.hash;
   if (hash && hash.includes('access_token=')) {
@@ -528,7 +528,7 @@ function initSpotifyController() {
       let clientId = localStorage.getItem('tbjp_spotify_client_id');
       if (!clientId) {
         clientId = prompt(
-          '[SPOTIFY 1-CLICK AUTH]\n\nEnter your Spotify App Client ID from developer.spotify.com:\n(Leave blank to paste direct token or playlist URL instead)'
+          '[SPOTIFY AUTH]\nEnter Spotify App Client ID:'
         );
         if (clientId && clientId.trim() !== '') {
           localStorage.setItem('tbjp_spotify_client_id', clientId.trim());
@@ -542,7 +542,7 @@ function initSpotifyController() {
         window.location.href = authUrl;
       } else {
         const inputVal = prompt(
-          '[SPOTIFY MANUAL TOKEN / PLAYLIST URL]\n\nPaste Spotify Access Token OR Playlist URL:'
+          '[SPOTIFY TOKEN / PLAYLIST]\nPaste Access Token or Playlist URL:'
         );
         if (!inputVal) return;
         if (inputVal.includes('spotify.com/playlist/')) {
@@ -562,9 +562,9 @@ function initSpotifyController() {
     };
   }
 
-  // Manual Vibe Buttons
+  // Buttons
   document.getElementById('sp-vibe-warmup').onclick = () => triggerPersonalizedVibe('warmup');
-  document.getElementById('sp-vibe-heavy').onclick = () => triggerPersonalizedVibe('heavy');
+  document.getElementById('sp-vibe-heavy').onclick = () => triggerPersonalizedVibe('workset');
 
   // Spotify Controls (Web API)
   document.getElementById('sp-play').onclick = () => spotifyControlCall('play');
@@ -583,22 +583,15 @@ async function fetchSpotifyPersonalTopSeeds() {
       const data = await res.json();
       if (data && data.items && data.items.length > 0) {
         spotifyUserTopArtistSeeds = data.items.map(a => a.id);
-        const badge = document.getElementById('spotify-algo-badge');
-        if (badge) badge.textContent = `ALGO: ${data.items[0].name.toUpperCase()} SEED ACTIVE`;
       }
     }
   } catch (err) {
-    console.warn('Spotify Top Seeds error:', err);
+    console.warn('Spotify seeds error:', err);
   }
 }
 
 async function triggerPersonalizedVibe(vibeType) {
-  if (!spotifyToken) {
-    alert('[SPOTIFY] Connect your Spotify account to use Personal Algorithmic Vibe Switching.');
-    return;
-  }
-
-  const badge = document.getElementById('spotify-algo-badge');
+  if (!spotifyToken) return;
 
   try {
     let seedsQuery = '';
@@ -608,10 +601,8 @@ async function triggerPersonalizedVibe(vibeType) {
       seedsQuery = `seed_genres=metal,rock,electronic`;
     }
 
-    const targetEnergy = vibeType === 'heavy' ? '0.95' : '0.45';
-    const targetValence = vibeType === 'heavy' ? '0.80' : '0.50';
-
-    if (badge) badge.textContent = `ALGO: GENERATING ${vibeType.toUpperCase()} VIBE...`;
+    const targetEnergy = vibeType === 'workset' ? '0.95' : '0.45';
+    const targetValence = vibeType === 'workset' ? '0.80' : '0.50';
 
     const res = await fetch(`https://api.spotify.com/v1/recommendations?${seedsQuery}&target_energy=${targetEnergy}&target_valence=${targetValence}&limit=10`, {
       headers: { 'Authorization': `Bearer ${spotifyToken}` }
@@ -621,7 +612,6 @@ async function triggerPersonalizedVibe(vibeType) {
       const data = await res.json();
       if (data && data.tracks && data.tracks.length > 0) {
         const uris = data.tracks.map(t => t.uri);
-        // Play algorithmic tracks
         await fetch('https://api.spotify.com/v1/me/player/play', {
           method: 'PUT',
           headers: {
@@ -630,14 +620,11 @@ async function triggerPersonalizedVibe(vibeType) {
           },
           body: JSON.stringify({ uris: uris })
         });
-        if (badge) badge.textContent = `ALGO: ${vibeType.toUpperCase()} VIBE ACTIVE`;
-        setTimeout(fetchSpotifyCurrentlyPlaying, 600);
+        setTimeout(fetchSpotifyCurrentlyPlaying, 500);
       }
-    } else {
-      alert(`[SPOTIFY ALGO] Response code ${res.status}. Active playback session required.`);
     }
   } catch (err) {
-    console.error('Spotify Algo Vibe Error:', err);
+    console.error('Spotify Vibe Error:', err);
   }
 }
 
@@ -648,10 +635,7 @@ function startSpotifyPolling() {
 }
 
 async function spotifyControlCall(endpoint) {
-  if (!spotifyToken) {
-    alert('[SPOTIFY] Please click [CONNECT] to authenticate with Spotify.');
-    return;
-  }
+  if (!spotifyToken) return;
 
   try {
     const method = endpoint === 'play' ? 'PUT' : 'POST';
@@ -662,8 +646,6 @@ async function spotifyControlCall(endpoint) {
 
     if (res.status === 204 || res.status === 200) {
       setTimeout(fetchSpotifyCurrentlyPlaying, 500);
-    } else {
-      alert(`[SPOTIFY] Remote response: ${res.status}. Make sure Spotify is active on your device!`);
     }
   } catch (err) {
     console.error('Spotify API Error:', err);
@@ -1288,8 +1270,7 @@ function toggleSetType(exIdx, setIdx) {
   logs[selectedDateStr].exercises[exIdx].sets[setIdx].type = (current === 'WARMUP') ? 'WORK' : 'WARMUP';
   if (logs[selectedDateStr].exercises[exIdx].sets[setIdx].type === 'WORK') {
     logs[selectedDateStr].exercises[exIdx].sets[setIdx].rir = 1;
-    // Auto trigger heavy workset vibe via Spotify API
-    triggerPersonalizedVibe('heavy');
+    triggerPersonalizedVibe('workset');
   }
   saveStorage();
   renderSelectedDate();
