@@ -2,6 +2,7 @@
  * LOGBOOK — ULTRA CONCISE (TBJP / IMMACULATE FORM)
  * Standard: 1 RIR across all worksets
  * Includes GitHub REST API Auto-Sync, Spotify Integration & Garmin Connect Real-Time Cloud Sync
+ * 100% Mobile & Cellphone Responsive
  */
 
 const GITHUB_REPO_OWNER = 'g77111125';
@@ -569,7 +570,7 @@ function initGarminController() {
 
 function startGarminRealtimePolling() {
   clearInterval(garminPollInterval);
-  garminPollInterval = setInterval(fetchGarminCloudLiveMetrics, 10000); // 10s live pulse
+  garminPollInterval = setInterval(fetchGarminCloudLiveMetrics, 10000);
 }
 
 async function fetchGarminCloudLiveMetrics() {
@@ -582,7 +583,6 @@ async function fetchGarminCloudLiveMetrics() {
     let kcals = 412;
 
     if (garminUserToken) {
-      // Query Garmin Connect Cloud Wellness API
       const today = new Date().toISOString().split('T')[0];
       const res = await fetch(`https://connect.garmin.com/wellness-service/wellness/dailyHeartRate?date=${today}`, {
         headers: { 'Authorization': `Bearer ${garminUserToken}` }
@@ -686,7 +686,7 @@ function renderGarminMetrics() {
   }
 }
 
-/* Spotify 1-Click OAuth Integration (Zero-Fluff) */
+/* Spotify 1-Click OAuth Integration */
 function handleSpotifyAuthCallback() {
   const hash = window.location.hash;
   if (hash && hash.includes('access_token=')) {
@@ -1419,7 +1419,7 @@ function renderSelectedDate() {
           <input type="text" class="ex-title-input" value="${ex.name.toUpperCase()}" onchange="logs['${selectedDateStr}'].exercises[${exIdx}].name = this.value.toUpperCase()">
           ${isArm && armMode === 'ZIGZAG' ? `<span class="arm-tag">[ZIG-ZAG]</span>` : ''}
         </div>
-        <div style="display:flex; align-items:center; gap:6px;">
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
           ${e1rm > 0 ? `<span class="e1rm-tag">e1RM: ${e1rm}kg</span>` : ''}
           ${smartTargetPrompt && !isMobility ? `<span class="smart-target-badge">${smartTargetPrompt}</span>` : ''}
         </div>
@@ -1434,24 +1434,26 @@ function renderSelectedDate() {
         </select>
       </div>
 
-      <table class="tbl">
-        <thead>
-          <tr>
-            <th>SET TYPE</th>
-            <th>PREV</th>
-            <th>${isMobility ? 'LOAD' : (isAssisted ? 'ASSIST KG' : 'KG')}</th>
-            <th class="small-caps-header">${hasShrugs ? 'REPS + SHRUGS' : 'REPS'}</th>
-            <th class="small-caps-header">RIR</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rowsHtml}
-        </tbody>
-      </table>
+      <div class="table-responsive-wrapper">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>SET TYPE</th>
+              <th>PREV</th>
+              <th>${isMobility ? 'LOAD' : (isAssisted ? 'ASSIST KG' : 'KG')}</th>
+              <th class="small-caps-header">${hasShrugs ? 'REPS + SHRUGS' : 'REPS'}</th>
+              <th class="small-caps-header">RIR</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
       <div style="display:flex; gap:8px; margin-top:4px;">
-        <button class="btn" style="font-size:0.7rem; padding:2px 6px;" onclick="addSet('${exIdx}', 'WORK')">+ WORK SET</button>
-        <button class="btn" style="font-size:0.7rem; padding:2px 6px; color:var(--gray);" onclick="addSet('${exIdx}', 'WARMUP')">+ WARMUP SET</button>
+        <button class="btn" style="font-size:0.7rem; padding:4px 8px;" onclick="addSet('${exIdx}', 'WORK')">+ WORK SET</button>
+        <button class="btn" style="font-size:0.7rem; padding:4px 8px; color:var(--gray);" onclick="addSet('${exIdx}', 'WARMUP')">+ WARMUP SET</button>
       </div>
     `;
     container.appendChild(card);
