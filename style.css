@@ -186,21 +186,79 @@ input[type="number"] {
   color: var(--white);
 }
 
-/* SPOTIFY CARD & ALGO BADGE */
-.spotify-card {
+/* GARMIN CARD */
+.garmin-card {
   margin-top: 10px;
   border: 1px solid var(--border);
   background: var(--bg);
   padding: 8px;
 }
 
-.spotify-algo-badge {
-  font-size: 0.6rem;
+.garmin-drop-zone {
+  border: 1px dashed var(--dim);
+  padding: 6px;
+  margin-top: 6px;
+  text-align: center;
+  transition: border-color 0.2s ease;
+}
+
+.garmin-drop-zone.dragover {
+  border-color: var(--white);
+  background: #111111;
+}
+
+.garmin-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.garmin-metric-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.garmin-label {
+  font-size: 0.58rem;
   font-weight: 800;
   color: var(--dim);
-  border-bottom: 1px dotted var(--border);
-  padding-bottom: 3px;
-  margin-top: 4px;
+}
+
+.garmin-input {
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 800;
+  outline: none;
+}
+
+.garmin-unit {
+  font-size: 0.55rem;
+  color: var(--dim);
+}
+
+.garmin-drop-hint {
+  font-size: 0.58rem;
+  color: var(--dim);
+  border-top: 1px dotted var(--border);
+  padding-top: 4px;
+}
+
+/* SPOTIFY CARD */
+.spotify-card {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  padding: 8px;
 }
 
 .spotify-track-info {
