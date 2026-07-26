@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOGBOOK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="hdr">
+    <div class="hdr-left">
+      <span class="tbjp-tag">tbjp</span>
+      <span class="hdr-title">LOGBOOK</span>
+    </div>
+    <div class="hdr-right">
+      <span>FORM: IMMACULATE</span>
+      <span>TARGET: 3-7 REPS @ 1 RIR</span>
+      <span id="session-timer-display" class="session-timer">[TIME: 00:00]</span>
+      <button class="btn-subtle" id="btn-export" title="Export Backup">[EXP]</button>
+      <button class="btn-subtle" id="btn-import" title="Import Backup">[IMP]</button>
+      <input type="file" id="import-file" style="display:none;" accept=".json">
+    </div>
+  </header>
+
+  <main class="grid-main">
+    <!-- CALENDAR PANEL -->
+    <section class="panel cal-panel">
+      <div class="cal-nav">
+        <button id="cal-prev" class="btn">&lt;</button>
+        <span id="cal-title" class="cal-title">07/26</span>
+        <button id="cal-next" class="btn">&gt;</button>
+        <button id="today-btn" class="btn">[TODAY]</button>
+      </div>
+      <div class="cal-head">
+        <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+      </div>
+      <div id="calendar-grid" class="cal-days"></div>
+
+      <!-- COLLAPSIBLE WORK SETS BREAKDOWN CARD -->
+      <div class="math-card">
+        <div class="math-header-expand" id="math-header-expand" onclick="toggleWorkSetsExpand()">
+          <span id="stat-total-worksets">// TOTAL WORK SETS: 0</span>
+          <button class="btn-subtle" id="btn-expand-worksets">[+]</button>
+        </div>
+        <div id="muscle-group-list" class="muscle-group-list" style="display:none;">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- LOG PANEL -->
+    <section class="panel log-panel">
+      <div class="log-top">
+        <span id="log-date" class="date-str">26/07/26</span>
+        <div class="preset-btns">
+          <button class="btn" id="btn-load-routine">[LOAD ROUTINE]</button>
+          <button class="btn" id="btn-clear">[CLEAR]</button>
+          <button class="btn btn-undo" id="btn-undo" style="display:none;">[UNDO CLEAR]</button>
+        </div>
+      </div>
+
+      <div id="exercise-container" class="ex-container">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="log-actions" id="log-actions" style="display:none;">
+        <button id="btn-add-ex" class="btn">+ EXERCISE</button>
+        <button id="btn-save" class="btn btn-save">[SAVE DAY]</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,552 @@
+/* ════════════════════════════════════════════════════════════════
+   LOGBOOK — RAW MONOCHROME (NO FLUFF)
+   TBJP / IMMACULATE FORM / 3-7 REP RANGE
+   ════════════════════════════════════════════════════════════════ */
+
+:root {
+  --bg: #000000;
+  --panel: #0d0d0d;
+  --input-bg: #141414;
+  --border: #262626;
+  --border-focus: #ffffff;
+  
+  --white: #ffffff;
+  --gray: #888888;
+  --dim: #444444;
+
+  --mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--gray);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+/* SMALL CAPS STYLING FOR REPS AND RIR */
+.small-caps-header, .small-caps-select {
+  font-variant: small-caps;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* REMOVE UP/DOWN SPINNER ARROWS ON NUMBER INPUTS */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Header */
+.hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.hdr-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tbjp-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--dim);
+  border: 1px solid var(--dim);
+  padding: 1px 4px;
+}
+
+.hdr-title {
+  color: var(--white);
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.hdr-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: var(--white);
+  font-weight: 600;
+}
+
+.session-timer {
+  color: var(--white);
+  font-weight: 800;
+  border: 1px solid var(--dim);
+  padding: 1px 6px;
+  font-size: 0.7rem;
+}
+
+/* Layout */
+.grid-main {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 12px;
+  max-width: 1150px;
+  margin: 12px auto;
+  padding: 0 12px;
+}
+
+@media (max-width: 768px) {
+  .grid-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 10px;
+}
+
+/* Calendar */
+.cal-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.cal-title {
+  color: var(--white);
+  font-weight: 700;
+}
+
+.cal-head {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  color: var(--dim);
+  font-size: 0.7rem;
+  margin-bottom: 4px;
+}
+
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.day-cell {
+  aspect-ratio: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--gray);
+  font-size: 0.8rem;
+  position: relative;
+}
+
+.day-cell:hover {
+  border-color: var(--white);
+  color: var(--white);
+}
+
+.day-cell.other-month {
+  color: var(--dim);
+}
+
+.day-cell.selected {
+  background: var(--white);
+  color: var(--bg);
+  font-weight: 800;
+}
+
+.day-cell.today {
+  border-color: var(--white);
+}
+
+.has-data {
+  position: absolute;
+  bottom: 2px;
+  font-size: 6px;
+  color: var(--white);
+}
+
+/* COLLAPSIBLE MATH CARD */
+.math-card {
+  margin-top: 14px;
+  padding: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.math-header-expand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--white);
+  cursor: pointer;
+}
+
+.math-header-expand:hover {
+  color: var(--gray);
+}
+
+.muscle-group-list {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dotted var(--border);
+}
+
+.math-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--gray);
+  margin-bottom: 3px;
+}
+
+.math-row strong {
+  color: var(--white);
+}
+
+/* Log Panel */
+.log-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+
+.date-str {
+  color: var(--white);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.preset-btns {
+  display: flex;
+  gap: 6px;
+}
+
+/* SECTION DIVIDERS */
+.section-divider {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--dim);
+  padding: 4px 0;
+  margin: 10px 0 6px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-divider span {
+  color: var(--white);
+}
+
+.arm-section-divider {
+  border-bottom-color: var(--gray);
+}
+
+/* Exercise Cards */
+.ex-row {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+
+.ex-row.mobility-row {
+  background: #050505;
+  border: 1px dashed var(--dim);
+  border-left: 3px solid var(--gray);
+  padding: 6px 10px;
+}
+
+.ex-row.arm-zigzag-row {
+  background: #080808;
+  border-left: 3px solid var(--white);
+}
+
+.ex-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.ex-title-input {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  outline: none;
+  width: 100%;
+}
+
+.arm-tag {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--dim);
+  border: 1px solid var(--dim);
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.e1rm-tag {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--dim);
+  border: 1px solid var(--dim);
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+/* PER-EXERCISE DISCOMFORT TRACKER — SUBTLE STYLING */
+.ex-discomfort-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  padding: 1px 4px;
+  border-bottom: 1px dotted #1a1a1a;
+}
+
+.ex-discomfort-row.active-discomfort {
+  border-bottom: 1px dashed var(--dim);
+  background: #111111;
+}
+
+.discomfort-label {
+  font-size: 0.6rem;
+  font-weight: 400;
+  color: var(--dim);
+}
+
+.discomfort-select {
+  background: transparent;
+  border: none;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  flex: 1;
+}
+
+.discomfort-select:hover {
+  color: var(--gray);
+}
+
+.ex-discomfort-row.active-discomfort .discomfort-select {
+  color: var(--white);
+}
+
+.discomfort-select option {
+  background: var(--bg);
+  color: var(--white);
+}
+
+/* SHRUG REPS TRACKER */
+.shrug-tracker {
+  display: inline-block;
+}
+
+.shrug-tracker select {
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  color: var(--gray) !important;
+  border: 1px dashed var(--dim) !important;
+  background: #0a0a0a !important;
+  padding: 3px 18px 3px 6px !important;
+  min-width: 95px !important;
+  box-sizing: border-box !important;
+}
+
+.smart-target-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--white);
+  border: 1px solid var(--gray);
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tbl th {
+  text-align: left;
+  font-size: 0.65rem;
+  color: var(--dim);
+  padding: 2px 4px;
+}
+
+.tbl td {
+  padding: 2px 4px;
+}
+
+.btn-set-type {
+  background: transparent;
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 4px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.btn-set-type.is-warmup {
+  color: var(--dim);
+  border-color: var(--border);
+}
+
+.btn-set-type.is-work {
+  color: var(--white);
+  border-color: var(--border-focus);
+}
+
+.prev-hint-td {
+  font-size: 0.7rem;
+  color: var(--dim);
+}
+
+.po-badge-inline {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--bg);
+  background: var(--white);
+  padding: 1px 3px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.tbl input, .tbl select {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--white);
+  font-family: var(--mono);
+  padding: 3px 18px 3px 6px;
+  font-size: 0.8rem;
+  box-sizing: border-box;
+}
+
+.reps-select {
+  min-width: 82px;
+}
+
+.rir-select {
+  min-width: 95px;
+}
+
+.kg-select {
+  min-width: 85px;
+}
+
+.tbl input:focus, .tbl select:focus {
+  border-color: var(--white);
+  outline: none;
+}
+
+/* Buttons */
+.btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--white);
+  font-family: var(--mono);
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--white);
+  color: var(--bg);
+}
+
+.btn-save {
+  background: var(--white);
+  color: var(--bg);
+  font-weight: 800;
+}
+
+.btn-save:hover {
+  background: var(--gray);
+  color: var(--bg);
+}
+
+.btn-undo {
+  background: var(--white);
+  color: var(--bg);
+  border-color: var(--white);
+  font-weight: 800;
+}
+
+.btn-subtle {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: var(--mono);
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.btn-subtle:hover {
+  color: var(--white);
+  border-color: var(--white);
+}
+
+.btn-del {
+  border: none;
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+}
+
+.btn-del:hover {
+  color: var(--white);
+}
+
+.empty-msg {
+  text-align: center;
+  padding: 30px;
+  color: var(--dim);
+}
+
+.log-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
