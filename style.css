@@ -194,6 +194,15 @@ input[type="number"] {
   padding: 8px;
 }
 
+.garmin-status-bar {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--dim);
+  border-bottom: 1px dotted var(--border);
+  padding-bottom: 3px;
+  margin-top: 4px;
+}
+
 .garmin-drop-zone {
   border: 1px dashed var(--dim);
   padding: 6px;
@@ -224,7 +233,7 @@ input[type="number"] {
 }
 
 .garmin-label {
-  font-size: 0.58rem;
+  font-size: 0.55rem;
   font-weight: 800;
   color: var(--dim);
 }
@@ -244,13 +253,6 @@ input[type="number"] {
 .garmin-unit {
   font-size: 0.55rem;
   color: var(--dim);
-}
-
-.garmin-drop-hint {
-  font-size: 0.58rem;
-  color: var(--dim);
-  border-top: 1px dotted var(--border);
-  padding-top: 4px;
 }
 
 /* SPOTIFY CARD */
