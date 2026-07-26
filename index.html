@@ -42,11 +42,14 @@
       </div>
       <div id="calendar-grid" class="cal-days"></div>
 
-      <!-- SPOTIFY MUSIC CONTROL CARD -->
+      <!-- SPOTIFY MUSIC CONTROL CARD (WITH PERSONAL ALGORITHMIC VIBE SWITCHING) -->
       <div class="math-card spotify-card" id="spotify-card">
         <div class="math-header-expand">
-          <span>// SPOTIFY MUSIC CONTROL</span>
+          <span>// SPOTIFY AI VIBE ENGINE</span>
           <button class="btn-subtle" id="btn-spotify-login">[CONNECT]</button>
+        </div>
+        <div class="spotify-algo-badge" id="spotify-algo-badge">
+          ALGO: PERSONALIZED (SPOTIFY TOP SEEDS)
         </div>
         <div class="spotify-track-info" id="spotify-track-name">
           [NO ACTIVE PLAYBACK]
@@ -55,6 +58,10 @@
           <button class="btn-subtle" id="sp-prev">[&lt;&lt; PREV]</button>
           <button class="btn-subtle" id="sp-play">[PLAY/PAUSE]</button>
           <button class="btn-subtle" id="sp-next">[NEXT &gt;&gt;]</button>
+        </div>
+        <div style="display:flex; gap:4px; margin-top:4px;">
+          <button class="btn-subtle" id="sp-vibe-warmup" style="flex:1;">[VIBE: WARMUP]</button>
+          <button class="btn-subtle" id="sp-vibe-heavy" style="flex:1; font-weight:800; color:var(--white);">[VIBE: HEAVY WORKSET]</button>
         </div>
         <!-- Embed Player Quick Backup -->
         <div id="spotify-embed-container" style="margin-top:8px;">

@@ -1,14 +1,12 @@
 /**
  * LOGBOOK — ULTRA CONCISE (TBJP / IMMACULATE FORM)
  * Standard: 1 RIR across all worksets
- * Includes GitHub REST API Auto-Sync Engine & 1-Click Spotify OAuth Control
+ * Includes GitHub REST API Auto-Sync Engine & Spotify Algorithmic AI Vibe Engine
  */
 
 const GITHUB_REPO_OWNER = 'g77111125';
 const GITHUB_REPO_NAME = 'logbook';
 const GITHUB_FILE_PATH = 'data/logs.json';
-
-const DEFAULT_SPOTIFY_CLIENT_ID = localStorage.getItem('tbjp_spotify_client_id') || '';
 
 const ANATOMICAL_DISCOMFORT_MAP = {
   'CABLE LOW ROW (SHRUG AT END)': ['NO DISCOMFORT', 'ROTATOR CUFF', 'LEFT ULNAR NERVE', 'LOWER BACK', 'FOREARM/ELBOW'],
@@ -141,6 +139,7 @@ let sessionTimerInterval = null;
 let sessionSeconds = 0;
 let spotifyToken = null;
 let spotifyPollInterval = null;
+let spotifyUserTopArtistSeeds = [];
 
 function formatWorkSetLabel(workSetIndex) {
   return `WORKSET ${workSetIndex}`;
@@ -490,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSelectedDate();
 });
 
-/* Spotify 1-Click OAuth Integration */
+/* Spotify 1-Click OAuth & AI Algorithmic Personalization Engine */
 function handleSpotifyAuthCallback() {
   const hash = window.location.hash;
   if (hash && hash.includes('access_token=')) {
@@ -521,6 +520,7 @@ function initSpotifyController() {
   if (spotifyToken && btnConnect) {
     btnConnect.textContent = '[CONNECTED]';
     startSpotifyPolling();
+    fetchSpotifyPersonalTopSeeds();
   }
 
   if (btnConnect) {
@@ -537,7 +537,7 @@ function initSpotifyController() {
 
       if (clientId && clientId.trim() !== '') {
         const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
-        const scopes = encodeURIComponent('user-read-playback-state user-modify-playback-state user-read-currently-playing');
+        const scopes = encodeURIComponent('user-read-playback-state user-modify-playback-state user-read-currently-playing user-top-read');
         const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId.trim()}&response_type=token&redirect_uri=${redirectUri}&scope=${scopes}`;
         window.location.href = authUrl;
       } else {
@@ -556,15 +556,89 @@ function initSpotifyController() {
           localStorage.setItem('tbjp_spotify_token', spotifyToken);
           btnConnect.textContent = '[CONNECTED]';
           startSpotifyPolling();
+          fetchSpotifyPersonalTopSeeds();
         }
       }
     };
   }
 
+  // Manual Vibe Buttons
+  document.getElementById('sp-vibe-warmup').onclick = () => triggerPersonalizedVibe('warmup');
+  document.getElementById('sp-vibe-heavy').onclick = () => triggerPersonalizedVibe('heavy');
+
   // Spotify Controls (Web API)
   document.getElementById('sp-play').onclick = () => spotifyControlCall('play');
   document.getElementById('sp-next').onclick = () => spotifyControlCall('next');
   document.getElementById('sp-prev').onclick = () => spotifyControlCall('previous');
+}
+
+async function fetchSpotifyPersonalTopSeeds() {
+  if (!spotifyToken) return;
+
+  try {
+    const res = await fetch('https://api.spotify.com/v1/me/top/artists?limit=3', {
+      headers: { 'Authorization': `Bearer ${spotifyToken}` }
+    });
+    if (res.status === 200) {
+      const data = await res.json();
+      if (data && data.items && data.items.length > 0) {
+        spotifyUserTopArtistSeeds = data.items.map(a => a.id);
+        const badge = document.getElementById('spotify-algo-badge');
+        if (badge) badge.textContent = `ALGO: ${data.items[0].name.toUpperCase()} SEED ACTIVE`;
+      }
+    }
+  } catch (err) {
+    console.warn('Spotify Top Seeds error:', err);
+  }
+}
+
+async function triggerPersonalizedVibe(vibeType) {
+  if (!spotifyToken) {
+    alert('[SPOTIFY] Connect your Spotify account to use Personal Algorithmic Vibe Switching.');
+    return;
+  }
+
+  const badge = document.getElementById('spotify-algo-badge');
+
+  try {
+    let seedsQuery = '';
+    if (spotifyUserTopArtistSeeds.length > 0) {
+      seedsQuery = `seed_artists=${spotifyUserTopArtistSeeds.slice(0, 2).join(',')}`;
+    } else {
+      seedsQuery = `seed_genres=metal,rock,electronic`;
+    }
+
+    const targetEnergy = vibeType === 'heavy' ? '0.95' : '0.45';
+    const targetValence = vibeType === 'heavy' ? '0.80' : '0.50';
+
+    if (badge) badge.textContent = `ALGO: GENERATING ${vibeType.toUpperCase()} VIBE...`;
+
+    const res = await fetch(`https://api.spotify.com/v1/recommendations?${seedsQuery}&target_energy=${targetEnergy}&target_valence=${targetValence}&limit=10`, {
+      headers: { 'Authorization': `Bearer ${spotifyToken}` }
+    });
+
+    if (res.status === 200) {
+      const data = await res.json();
+      if (data && data.tracks && data.tracks.length > 0) {
+        const uris = data.tracks.map(t => t.uri);
+        // Play algorithmic tracks
+        await fetch('https://api.spotify.com/v1/me/player/play', {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${spotifyToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ uris: uris })
+        });
+        if (badge) badge.textContent = `ALGO: ${vibeType.toUpperCase()} VIBE ACTIVE`;
+        setTimeout(fetchSpotifyCurrentlyPlaying, 600);
+      }
+    } else {
+      alert(`[SPOTIFY ALGO] Response code ${res.status}. Active playback session required.`);
+    }
+  } catch (err) {
+    console.error('Spotify Algo Vibe Error:', err);
+  }
 }
 
 function startSpotifyPolling() {
@@ -1214,6 +1288,8 @@ function toggleSetType(exIdx, setIdx) {
   logs[selectedDateStr].exercises[exIdx].sets[setIdx].type = (current === 'WARMUP') ? 'WORK' : 'WARMUP';
   if (logs[selectedDateStr].exercises[exIdx].sets[setIdx].type === 'WORK') {
     logs[selectedDateStr].exercises[exIdx].sets[setIdx].rir = 1;
+    // Auto trigger heavy workset vibe via Spotify API
+    triggerPersonalizedVibe('heavy');
   }
   saveStorage();
   renderSelectedDate();
