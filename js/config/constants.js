@@ -3,7 +3,7 @@
  * Pure data module. No side effects, no imports, no DOM access.
  */
 
-export const GITHUB_REPO_OWNER = 'g77111125';
+export const GITHUB_REPO_OWNER = 'gilbertordx';
 export const GITHUB_REPO_NAME  = 'logbook';
 export const GITHUB_FILE_PATH  = 'data/logs.json';
 
