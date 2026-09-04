@@ -1,65 +1,90 @@
-# logbook
+# Logbook
 
-Personal workout tracking app + learning lab. A browser-based tool for logging training sessions with real-time Garmin heart-rate sync, Spotify control, and GitHub-backed storage. Built as both a practical solution to a personal need and a constant experiment in code organization, API integration, and responsive UI design.
+Logbook is a local-first workout log implemented as a static browser application. It records exercises, sets, repetitions, weight, RIR, discomfort notes, session duration, and optional heart-rate/calorie metrics.
 
-## What It Does
+This repository is a learning project, not a production service. The sections below distinguish implemented behavior from current limitations.
 
-- **Workout Logging**: Calendar-based session tracking with exercise details, sets, reps, weight, and form notes
-- **Garmin Forerunner 55 Integration**: Real-time heart-rate and calorie data synced from Garmin Connect cloud API
-- **Spotify Control**: In-app music playback control during workouts
-- **GitHub Sync**: Automatic backup and version control of all workout data via GitHub API
-- **Mobile Responsive**: Full touch-optimized interface for training floor use
-- **Local-First Storage**: JSON-backed data stored locally with GitHub as optional sync layer
+## Implemented features
 
-## Architecture
+- Calendar-based workout entry and editing
+- A reusable default routine and previous-session comparisons
+- Session timer and work-set statistics
+- Browser `localStorage` persistence
+- JSON backup export and import
+- Optional backup of the complete log file through the GitHub Contents API
+- Optional Spotify playback controls using a user-provided client ID and browser OAuth token
+- Manual Garmin metric entry and limited import from JSON or TCX files
+- Responsive, touch-oriented interface
 
-Modular ES6 design split across 14 focused components:
+## Technical stack and architecture
 
-```
+- HTML5 and CSS3
+- Vanilla JavaScript with native ES modules
+- No framework, transpiler, bundler, package manager, or backend
+
+The application has 16 JavaScript modules:
+
+```text
 js/
-├── main.js              # App bootstrap and orchestration
-├── state.js             # Central state management
-├── config/              # API credentials, constants
-├── services/            # API integrations (Garmin, Spotify, GitHub)
-├── ui/                  # UI components (calendar, forms, cards)
-└── utils/               # Helpers (parsing, formatting, storage)
+├── main.js       # bootstrap and dependency wiring
+├── state.js      # shared in-memory state
+├── config/       # static application data
+├── services/     # local persistence and third-party API clients
+├── ui/           # rendering and DOM event handling
+└── utils/        # date, timer, and workout calculations
 ```
 
-Single responsibility principle throughout — each module handles one concern. No frameworks; vanilla JS with modern ES module syntax.
+`main.js` creates a shared render callback and supplies the state object to the UI and service controllers. Data is stored as a JSON object keyed by `DD/MM/YY`. There is no database, server-side API, user model, or schema migration layer.
 
-## Getting Started
+## Running locally
+
+The ES modules must be served over HTTP:
 
 ```bash
-# Serve locally (requires Node.js or simple HTTP server)
 ./serve.sh
-# or
+```
+
+Then open `http://localhost:8080`.
+
+Alternatively:
+
+```bash
 python -m http.server 8000
 ```
 
-Open `http://localhost:8000` in browser. Data persists in browser localStorage and syncs to GitHub if credentials are configured.
+Then open `http://localhost:8000`.
 
-## External Integrations
+## Integrations and limitations
 
-**Garmin Connect API**
-- OAuth flow for read-only access to heart-rate and activity data
-- Real-time polling every 10 seconds during active session
-- Forerunner 55 device-specific data parsing
+### Garmin data
 
-**Spotify Web API**
-- Player control (play, pause, skip, volume) during workouts
-- Requires Spotify Premium and OAuth token refresh
+Garmin metrics can be entered manually or imported from:
 
-**GitHub API**
-- Automatic JSON backup commits to repo
-- Retrieves workout history from git commits
-- Read/write access needed; credentials stored in browser config
+- JSON containing `averageHR`/`avgHr`, `maxHR`/`maxHr`, and `calories`/`kcals`
+- TCX containing `AverageHeartRateBpm`, `MaximumHeartRateBpm`, and `Calories`
 
-## Study Notes
+The repository does **not** implement Garmin OAuth, Garmin Connect cloud synchronization, live heart-rate polling, FIT decoding, GPX metric extraction, or device-specific Forerunner parsing. Unsupported or malformed files are rejected; the application does not substitute sample values.
 
-This project is intentionally hacked and evolved. Expect experimentation: feature branches, architectural changes, API tweaks. It's as much about understanding how integrations work as it is about the final product.
+### Spotify
 
-Originally paired with [`devsecops-pipeline`](https://github.com/gilbertordx/devsecops-pipeline) — a study project exploring CI/CD, infrastructure-as-code, and AWS provisioning. If this app ever needs containerization and automated deployment, those patterns would apply here.
+Spotify controls call the Spotify Web API directly from the browser. The current authentication implementation uses the OAuth implicit-grant response and stores the access token only in `sessionStorage`. There is no refresh-token flow or backend token exchange. Playback endpoints generally require Spotify Premium and an active playback device.
 
-## Training Philosophy
+### GitHub backup
 
-Built around Dorian Yates-inspired training: form over volume, 3–7 reps at 1 RIR (rep in reserve). The app reinforces this through the header tagline and session timer.
+GitHub synchronization uses the Contents API to read or replace `data/logs.json` on the `main` branch. It creates commits containing the complete workout dataset. The user supplies a personal access token, which is kept in `sessionStorage` for the current tab rather than persisted across browser sessions.
+
+This is a convenience backup mechanism, not a multi-user database. It has no conflict-resolution protocol beyond GitHub's file SHA check. Use a fine-grained token limited to this repository and Contents read/write access. Workout data committed to a public repository is public.
+
+## Testing and deployment status
+
+There is currently no automated test suite, lint configuration, CI workflow, container image, or cloud deployment configuration in this repository. The application can be deployed to a static host, but no production deployment is defined here.
+
+## Product direction
+
+The intended next version is a full-stack training intelligence application. Its goal is to replace memory and guesswork with consistent logging, reproducible training metrics, explicit habit/accountability signals, and an in-app assistant that can question the user and explain patterns using the user's own data.
+
+This is planned work, not functionality in the current static application. The proposed architecture, metric definitions, AI boundaries, delivery phases, and open decisions are maintained in [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Training model
+
+The default routine is based on low-volume training with a target of 3–7 repetitions at approximately one rep in reserve. This is application seed data, not medical or training advice.

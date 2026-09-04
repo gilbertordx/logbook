@@ -26,7 +26,4 @@ export const state = {
   spotifyPollInterval: null,
   spotifyUserTopArtistSeeds: [],
 
-  // Garmin
-  garminPollInterval: null,
-  garminUserToken: null,
 };

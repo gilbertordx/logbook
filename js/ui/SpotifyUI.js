@@ -27,7 +27,9 @@ export function initSpotifyController(state) {
   }
 
   // Restore session token
-  state.spotifyToken = localStorage.getItem('tbjp_spotify_token');
+  // Access tokens are limited to this tab. Remove tokens persisted by older versions.
+  state.spotifyToken = sessionStorage.getItem('tbjp_spotify_token');
+  localStorage.removeItem('tbjp_spotify_token');
   const btnConnect   = document.getElementById('btn-spotify-login');
 
   if (state.spotifyToken && btnConnect) {
@@ -68,7 +70,7 @@ export function initSpotifyController(state) {
           }
         } else {
           state.spotifyToken = inputVal.trim();
-          localStorage.setItem('tbjp_spotify_token', state.spotifyToken);
+          sessionStorage.setItem('tbjp_spotify_token', state.spotifyToken);
           btnConnect.textContent = '[CONNECTED]';
           startSpotifyPolling(state);
           fetchSpotifyPersonalTopSeeds(state);

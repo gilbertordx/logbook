@@ -50,7 +50,7 @@ export async function pullFromGitHub(token, state, onDone) {
  * @param {string} [tokenOverride]
  */
 export async function syncToGitHub(state, tokenOverride = null) {
-  const token = tokenOverride || localStorage.getItem('tbjp_gh_token');
+  const token = tokenOverride || sessionStorage.getItem('tbjp_gh_token');
   if (!token) return;
 
   updateSyncBadge('BUSY...');
@@ -98,7 +98,9 @@ export async function syncToGitHub(state, tokenOverride = null) {
  * @param {function} onPullDone  () => void — refresh callback after pull
  */
 export function initGitHubSync(state, onPullDone) {
-  const token = localStorage.getItem('tbjp_gh_token');
+  // PATs are deliberately limited to this tab. Remove tokens persisted by older versions.
+  const token = sessionStorage.getItem('tbjp_gh_token');
+  localStorage.removeItem('tbjp_gh_token');
   if (token) {
     updateSyncBadge('OK');
     pullFromGitHub(token, state, onPullDone);
@@ -107,19 +109,19 @@ export function initGitHubSync(state, onPullDone) {
   }
 
   document.getElementById('btn-github-sync').onclick = () => {
-    const existing   = localStorage.getItem('tbjp_gh_token');
+    const existing   = sessionStorage.getItem('tbjp_gh_token');
     const inputToken = prompt(
-      '[GITHUB AUTO-SYNC SETUP]\n\nEnter your GitHub Personal Access Token (PAT) with repo scope:\n(Leave blank to disconnect auto-sync)',
+      '[GITHUB BACKUP SETUP]\n\nEnter a fine-grained PAT limited to this repository with Contents read/write access. It will be retained only for this browser tab.\n\nLeave blank to disconnect.',
       existing || ''
     );
     if (inputToken === null) return;
 
     if (inputToken.trim() === '') {
-      localStorage.removeItem('tbjp_gh_token');
+      sessionStorage.removeItem('tbjp_gh_token');
       updateSyncBadge('LOCAL');
       alert('[SYSTEM] GITHUB SYNC DISCONNECTED.');
     } else {
-      localStorage.setItem('tbjp_gh_token', inputToken.trim());
+      sessionStorage.setItem('tbjp_gh_token', inputToken.trim());
       updateSyncBadge('SYNCING...');
       syncToGitHub(state, inputToken.trim());
     }

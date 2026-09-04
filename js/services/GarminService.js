@@ -1,134 +1,107 @@
 /**
- * LOGBOOK — Garmin Service
- * Single responsibility: Garmin Connect cloud polling, FIT/TCX/GPX file parsing,
- * and metric persistence to state.logs.
+ * Garmin metric persistence and limited JSON/TCX import.
+ * No Garmin authentication, cloud API, live polling, FIT decoding, or GPX
+ * parsing is implemented in this application.
  */
 
 import { save } from './StorageService.js';
 
-/* ── Metric persistence ────────────────────────────────────────────── */
+function readMetricInput(id) {
+  const value = Number.parseInt(document.getElementById(id).value, 10);
+  return Number.isFinite(value) && value >= 0 ? value : 0;
+}
 
-/**
- * Reads HR/kcal inputs from DOM and writes them to state.logs[selectedDateStr].
- * Also updates the Garmin header badge.
- * @param {object} state
- */
 export function saveGarminMetrics(state) {
   if (!state.logs[state.selectedDateStr]) state.logs[state.selectedDateStr] = {};
-  const avgHr = parseInt(document.getElementById('garmin-avg-hr').value, 10) || 0;
-  const maxHr = parseInt(document.getElementById('garmin-max-hr').value, 10) || 0;
-  const kcals = parseInt(document.getElementById('garmin-kcals').value, 10)  || 0;
+
+  const avgHr = readMetricInput('garmin-avg-hr');
+  const maxHr = readMetricInput('garmin-max-hr');
+  const kcals = readMetricInput('garmin-kcals');
 
   state.logs[state.selectedDateStr].garminData = { avgHr, maxHr, kcals };
   save(state.logs);
 
   const btn = document.getElementById('btn-garmin-toggle');
-  if (btn) {
-    btn.textContent = avgHr > 0
-      ? `[GARMIN: ${avgHr} BPM • ${kcals} KCAL (LIVE)]`
-      : '[GARMIN: FORERUNNER 55]';
+  if (btn) btn.textContent = avgHr > 0
+    ? `[GARMIN DATA: ${avgHr} BPM • ${kcals} KCAL]`
+    : '[GARMIN DATA]';
+}
+
+function optionalNonNegativeInteger(...values) {
+  const raw = values.find(value => value !== undefined && value !== null && value !== '');
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function parseJsonMetrics(text) {
+  const parsed = JSON.parse(text);
+  return {
+    avgHr: optionalNonNegativeInteger(parsed.averageHR, parsed.avgHr),
+    maxHr: optionalNonNegativeInteger(parsed.maxHR, parsed.maxHr),
+    kcals: optionalNonNegativeInteger(parsed.calories, parsed.kcals),
+  };
+}
+
+function parseTcxMetrics(text) {
+  const documentNode = new DOMParser().parseFromString(text, 'application/xml');
+  if (documentNode.querySelector('parsererror')) {
+    throw new Error('The selected file is not valid XML.');
   }
-}
 
-/* ── Cloud polling ─────────────────────────────────────────────────── */
-
-/**
- * Starts a 10-second polling interval for live Garmin metrics.
- * @param {object} state
- */
-export function startGarminRealtimePolling(state) {
-  clearInterval(state.garminPollInterval);
-  state.garminPollInterval = setInterval(() => fetchGarminCloudLiveMetrics(state), 10_000);
-}
-
-/**
- * Fetches live HR/kcal from Garmin Connect (or uses fallback values).
- * @param {object} state
- */
-export async function fetchGarminCloudLiveMetrics(state) {
-  const statusBar = document.getElementById('garmin-status-bar');
-  if (statusBar) statusBar.textContent = 'STATUS: FETCHING LIVE METRICS...';
-
-  try {
-    let liveHr = 138, peakHr = 164, kcals = 412;
-
-    if (state.garminUserToken) {
-      const today = new Date().toISOString().split('T')[0];
-      const res   = await fetch(
-        `https://connect.garmin.com/wellness-service/wellness/dailyHeartRate?date=${today}`,
-        { headers: { Authorization: `Bearer ${state.garminUserToken}` } }
-      ).catch(() => null);
-
-      if (res && res.status === 200) {
-        const data = await res.json();
-        liveHr = data.lastHeartRate       || 140;
-        peakHr = data.maxHeartRate        || 168;
-        kcals  = data.activeKilocalories  || 425;
-      }
-    }
-
-    document.getElementById('garmin-avg-hr').value = liveHr;
-    document.getElementById('garmin-max-hr').value = peakHr;
-    document.getElementById('garmin-kcals').value  = kcals;
-    saveGarminMetrics(state);
-
-    if (statusBar) statusBar.textContent = `STATUS: LIVE SYNC OK (${new Date().toLocaleTimeString()})`;
-    const btn = document.getElementById('btn-garmin-toggle');
-    if (btn) btn.textContent = `[GARMIN: ${liveHr} BPM • ${kcals} KCAL (LIVE)]`;
-  } catch (err) {
-    if (statusBar) statusBar.textContent = 'STATUS: CLOUD FALLBACK ACTIVE';
+  if (documentNode.documentElement.localName !== 'TrainingCenterDatabase') {
+    throw new Error('The selected file is not a TCX TrainingCenterDatabase document.');
   }
-}
 
-/* ── File parsing ──────────────────────────────────────────────────── */
+  const firstByLocalName = (root, localName) =>
+    root.getElementsByTagNameNS('*', localName)[0] ?? null;
 
-/**
- * Parses a Garmin export file (JSON / TCX / GPX / FIT) and populates HR inputs.
- * @param {File}   file
- * @param {object} state
- */
-export function parseGarminWorkoutFile(file, state) {
-  const reader = new FileReader();
-
-  reader.onload = (event) => {
-    const text = event.target.result;
-    let avgHr = 135, maxHr = 165, kcals = 400;
-
-    if (file.name.endsWith('.json')) {
-      try {
-        const parsed = JSON.parse(text);
-        avgHr = parsed.averageHR || parsed.avgHr || 135;
-        maxHr = parsed.maxHR     || parsed.maxHr || 165;
-        kcals = parsed.calories  || parsed.kcals || 400;
-      } catch { /* ignore malformed JSON */ }
-
-    } else if (
-      file.name.endsWith('.tcx') ||
-      file.name.endsWith('.gpx') ||
-      text.includes('<TrainingCenterDatabase')
-    ) {
-      const avgMatch  = text.match(/<AverageHeartRateBpm>[\s\S]*?<Value>(\d+)<\/Value>/);
-      const maxMatch  = text.match(/<MaximumHeartRateBpm>[\s\S]*?<Value>(\d+)<\/Value>/);
-      const kcalMatch = text.match(/<Calories>(\d+)<\/Calories>/);
-      if (avgMatch)  avgHr = parseInt(avgMatch[1], 10);
-      if (maxMatch)  maxHr = parseInt(maxMatch[1], 10);
-      if (kcalMatch) kcals = parseInt(kcalMatch[1], 10);
-
-    } else {
-      // FIT binary fallback
-      avgHr = 138; maxHr = 164; kcals = 415;
-    }
-
-    document.getElementById('garmin-avg-hr').value = avgHr;
-    document.getElementById('garmin-max-hr').value = maxHr;
-    document.getElementById('garmin-kcals').value  = kcals;
-    saveGarminMetrics(state);
-
-    alert(`[GARMIN FORERUNNER 55] IMPORTED METRICS:\n\nAVG HR: ${avgHr} BPM\nMAX HR: ${maxHr} BPM\nENERGY: ${kcals} KCAL`);
+  const heartRateValue = localName => {
+    const container = firstByLocalName(documentNode, localName);
+    return container ? firstByLocalName(container, 'Value')?.textContent.trim() : null;
   };
 
-  // FIT files are binary; everything else is text
-  file.name.endsWith('.fit')
-    ? reader.readAsArrayBuffer(file)
-    : reader.readAsText(file);
+  return {
+    avgHr: optionalNonNegativeInteger(heartRateValue('AverageHeartRateBpm')),
+    maxHr: optionalNonNegativeInteger(heartRateValue('MaximumHeartRateBpm')),
+    kcals: optionalNonNegativeInteger(firstByLocalName(documentNode, 'Calories')?.textContent.trim()),
+  };
+}
+
+export function parseGarminWorkoutFile(file, state) {
+  const extension = file.name.split('.').pop()?.toLowerCase();
+  if (!['json', 'tcx'].includes(extension)) {
+    alert('[GARMIN DATA] UNSUPPORTED FILE. USE JSON OR TCX.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onerror = () => alert('[GARMIN DATA] FILE COULD NOT BE READ.');
+  reader.onload = (event) => {
+    try {
+      const metrics = extension === 'json'
+        ? parseJsonMetrics(event.target.result)
+        : parseTcxMetrics(event.target.result);
+
+      if (Object.values(metrics).every(value => value === null)) {
+        throw new Error('No supported heart-rate or calorie metrics were found.');
+      }
+
+      const current = state.logs[state.selectedDateStr]?.garminData ?? {};
+      const avgHr = metrics.avgHr ?? current.avgHr ?? 0;
+      const maxHr = metrics.maxHr ?? current.maxHr ?? 0;
+      const kcals = metrics.kcals ?? current.kcals ?? 0;
+
+      document.getElementById('garmin-avg-hr').value = avgHr;
+      document.getElementById('garmin-max-hr').value = maxHr;
+      document.getElementById('garmin-kcals').value = kcals;
+      saveGarminMetrics(state);
+
+      const statusBar = document.getElementById('garmin-status-bar');
+      if (statusBar) statusBar.textContent = `STATUS: IMPORTED ${file.name}`;
+      alert(`[GARMIN DATA] IMPORTED METRICS:\n\nAVG HR: ${avgHr} BPM\nMAX HR: ${maxHr} BPM\nENERGY: ${kcals} KCAL`);
+    } catch (error) {
+      alert(`[GARMIN DATA] IMPORT FAILED: ${error.message}`);
+    }
+  };
+  reader.readAsText(file);
 }

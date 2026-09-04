@@ -20,7 +20,7 @@
       <span>FORM: IMMACULATE</span>
       <span>TARGET: 3-7 REPS @ 1 RIR</span>
       <span id="session-timer-display" class="session-timer">[TIME: 00:00]</span>
-      <button class="btn-subtle" id="btn-garmin-toggle" title="Garmin Forerunner 55 Live Sync">[GARMIN: FORERUNNER 55]</button>
+      <button class="btn-subtle" id="btn-garmin-toggle" title="Manual Garmin metrics and file import">[GARMIN DATA]</button>
       <button class="btn-subtle" id="btn-spotify-toggle" title="Spotify Music Control">[SPOTIFY]</button>
       <button class="btn-subtle" id="btn-github-sync" title="GitHub Auto-Sync Status">[SYNC: LOCAL]</button>
       <button class="btn-subtle" id="btn-export" title="Export Backup">[EXP]</button>
@@ -43,21 +43,20 @@
       </div>
       <div id="calendar-grid" class="cal-days"></div>
 
-      <!-- GARMIN FORERUNNER 55 REAL-TIME CLOUD CARD -->
+      <!-- MANUAL GARMIN METRICS AND EXPORT IMPORT -->
       <div class="math-card garmin-card" id="garmin-card" style="display:none;">
         <div class="math-header-expand">
-          <span>// GARMIN CONNECT CLOUD</span>
-          <button class="btn-subtle" id="btn-garmin-connect">[CONNECT ACCOUNT]</button>
+          <span>// GARMIN WORKOUT METRICS</span>
         </div>
 
         <div class="garmin-status-bar" id="garmin-status-bar">
-          STATUS: CLOUD SYNC READY
+          STATUS: MANUAL ENTRY OR JSON/TCX IMPORT
         </div>
         
         <div class="garmin-drop-zone" id="garmin-drop-zone">
           <div class="garmin-metrics-grid">
             <div class="garmin-metric-box">
-              <span class="garmin-label">LIVE / AVG HR</span>
+              <span class="garmin-label">AVG HR</span>
               <input type="number" id="garmin-avg-hr" class="garmin-input" placeholder="135" onchange="saveGarminMetrics()">
               <span class="garmin-unit">BPM</span>
             </div>
@@ -72,11 +71,8 @@
               <span class="garmin-unit">KCAL</span>
             </div>
           </div>
-          <div style="display:flex; gap:4px; margin-top:4px;">
-            <button class="btn-subtle" id="btn-garmin-fetch-live" style="flex:1;">[FETCH LIVE DATA]</button>
-            <button class="btn-subtle" id="btn-garmin-import" style="flex:1;">[IMPORT FILE]</button>
-          </div>
-          <input type="file" id="garmin-file-input" style="display:none;" accept=".fit,.tcx,.gpx,.json">
+          <button class="btn-subtle" id="btn-garmin-import" style="width:100%; margin-top:4px;">[IMPORT JSON/TCX]</button>
+          <input type="file" id="garmin-file-input" style="display:none;" accept=".tcx,.json,application/json,application/xml,text/xml">
         </div>
       </div>
 

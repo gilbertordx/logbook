@@ -18,7 +18,8 @@ export function handleSpotifyAuthCallback(state) {
     const token  = params.get('access_token');
     if (token) {
       state.spotifyToken = token;
-      localStorage.setItem('tbjp_spotify_token', token);
+      sessionStorage.setItem('tbjp_spotify_token', token);
+      localStorage.removeItem('tbjp_spotify_token');
       window.location.hash = '';
     }
   }
@@ -141,7 +142,7 @@ export async function fetchSpotifyCurrentlyPlaying(state) {
       }
     } else if (res.status === 401) {
       if (trackEl) trackEl.textContent = '[SESSION EXPIRED — CLICK CONNECT]';
-      localStorage.removeItem('tbjp_spotify_token');
+      sessionStorage.removeItem('tbjp_spotify_token');
       state.spotifyToken = null;
     }
   } catch (err) {
