@@ -11,7 +11,7 @@
 import { save }               from '../services/StorageService.js';
 import { syncToGitHub }       from '../services/GitHubSyncService.js';
 import { triggerPersonalizedVibe } from '../services/SpotifyService.js';
-import { DEFAULT_ROUTINE }    from '../config/constants.js';
+import { DEFAULT_ROUTINE, ROUTINES } from '../config/constants.js';
 import { formatDateKey }      from '../utils/dateUtils.js';
 import {
   calculateE1RM,
@@ -166,6 +166,18 @@ function _registerWindowHandlers(state, refresh) {
     renderSelectedDate(state, refresh);
   };
 
+  // Start a named routine (split) for the selected day
+  window.startRoutine = (routineId) => {
+    const routine = ROUTINES.find(r => r.id === routineId);
+    if (!routine) return;
+    state.logs[state.selectedDateStr] = {
+      ...JSON.parse(JSON.stringify(DEFAULT_ROUTINE)),
+      exercises: JSON.parse(JSON.stringify(routine.exercises)),
+    };
+    save(state.logs);
+    refresh();
+  };
+
   window.addSet = (exIdx, setType = 'WORK') => {
     const ex   = state.logs[state.selectedDateStr].exercises[exIdx];
     const last = ex.sets[ex.sets.length - 1] || { weight: 0, reps: 5, rir: 1 };
@@ -214,10 +226,13 @@ export function renderSelectedDate(state, refresh) {  // eslint-disable-line no-
 
   if (!entry) {
     const isToday = state.selectedDateStr === formatDateKey(new Date());
+    const available = ROUTINES.filter(r => r.exercises.length > 0);
     container.innerHTML =
       `<div class="empty-msg">[NO LOGGED SESSION FOR ${state.selectedDateStr}]</div>` +
-      `<button class="btn btn-start" onclick="document.getElementById('btn-load-routine').click()">` +
-      `${isToday ? "▶ START TODAY'S WORKOUT" : '▶ START WORKOUT'}</button>`;
+      available.map(r =>
+        `<button class="btn btn-start" onclick="startRoutine('${r.id}')">` +
+        `${isToday ? '▶ START ' + r.label : '▶ ' + r.label}</button>`
+      ).join('');
     actions.style.display = 'none';
     renderMuscleGroupStats(null, state.isWorkSetsExpanded);
     return;

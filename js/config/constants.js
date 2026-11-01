@@ -112,3 +112,15 @@ export const DEFAULT_ROUTINE = {
     },
   ],
 };
+
+/**
+ * Named routines (splits). A routine with no exercises is hidden in the
+ * start menu until exercises are added to it.
+ */
+export const ROUTINES = [
+  { id: 'full',    label: 'FULL BODY', exercises: DEFAULT_ROUTINE.exercises },
+  { id: 'upper1',  label: 'UPPER 1',   exercises: [] },
+  { id: 'upper2',  label: 'UPPER 2',   exercises: [] },
+  { id: 'lower1',  label: 'LOWER 1',   exercises: [] },
+  { id: 'lower2',  label: 'LOWER 2',   exercises: [] },
+];
