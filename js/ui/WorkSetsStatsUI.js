@@ -17,7 +17,7 @@ export function renderMuscleGroupStats(entry, isWorkSetsExpanded) {
   const btnExpand     = document.getElementById('btn-expand-worksets');
 
   if (!entry || !entry.exercises) {
-    if (totalEl)       totalEl.textContent      = '// WORK SETS: 0 SETS';
+    if (totalEl)       totalEl.textContent      = '// SETS: 0 SETS';
     if (listContainer) listContainer.style.display = 'none';
     return;
   }
@@ -42,7 +42,7 @@ export function renderMuscleGroupStats(entry, isWorkSetsExpanded) {
     }
   });
 
-  if (totalEl)   totalEl.textContent  = `// WORK SETS: ${overallWorkSets} SETS`;
+  if (totalEl)   totalEl.textContent  = `// SETS: ${overallWorkSets} SETS`;
   if (btnExpand) btnExpand.textContent = isWorkSetsExpanded ? '[-]' : '[+]';
 
   if (!listContainer) return;

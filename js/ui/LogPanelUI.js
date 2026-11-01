@@ -400,7 +400,7 @@ export function renderSelectedDate(state, refresh) {  // eslint-disable-line no-
       </div>
       <div style="display:flex;gap:8px;margin-top:4px;">
         <button class="btn" style="font-size:0.7rem;padding:4px 8px;"
-                onclick="addSet(${exIdx},'WORK')">+ WORK SET</button>
+                onclick="addSet(${exIdx},'WORK')">+ SET</button>
         <button class="btn" style="font-size:0.7rem;padding:4px 8px;color:var(--gray);"
                 onclick="addSet(${exIdx},'WARMUP')">+ WARMUP SET</button>
       </div>`;

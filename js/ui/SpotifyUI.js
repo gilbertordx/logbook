@@ -79,12 +79,5 @@ export function initSpotifyController(state) {
     };
   }
 
-  // Vibe buttons
-  document.getElementById('sp-vibe-warmup').onclick = () => triggerPersonalizedVibe('warmup',   state);
-  document.getElementById('sp-vibe-heavy').onclick  = () => triggerPersonalizedVibe('workset',  state);
-
-  // Playback controls
-  document.getElementById('sp-play').onclick = () => spotifyControlCall('play',     state);
-  document.getElementById('sp-next').onclick = () => spotifyControlCall('next',     state);
-  document.getElementById('sp-prev').onclick = () => spotifyControlCall('previous', state);
+  // Playback controls were removed: Spotify is now only a link to the app.
 }

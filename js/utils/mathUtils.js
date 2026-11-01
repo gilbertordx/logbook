@@ -12,7 +12,7 @@ import { parseDMY } from './dateUtils.js';
  * @returns {string}
  */
 export function formatWorkSetLabel(workSetIndex) {
-  return `WORKSET ${workSetIndex}`;
+  return `SET ${workSetIndex}`;
 }
 
 /**

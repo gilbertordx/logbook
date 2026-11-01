@@ -21,7 +21,7 @@
       <span>TARGET: 3-7 REPS @ 1 RIR</span>
       <span id="session-timer-display" class="session-timer">[TIME: 00:00]</span>
       <button class="btn-subtle" id="btn-garmin-toggle" title="Manual Garmin metrics and file import">[GARMIN DATA]</button>
-      <button class="btn-subtle" id="btn-spotify-toggle" title="Spotify Music Control">[SPOTIFY]</button>
+      <a class="btn-subtle" href="https://open.spotify.com" target="_blank" rel="noopener" title="Open Spotify">[SPOTIFY]</a>
       <button class="btn-subtle" id="btn-github-sync" title="GitHub Auto-Sync Status">[SYNC: LOCAL]</button>
       <button class="btn-subtle" id="btn-export" title="Export Backup">[EXP]</button>
       <button class="btn-subtle" id="btn-import" title="Import Backup">[IMP]</button>
@@ -78,32 +78,13 @@
 
       <!-- SPOTIFY MUSIC CONTROL CARD (RAW MONOCHROME - NO BUZZWORDS) -->
       <div class="math-card spotify-card" id="spotify-card">
-        <div class="math-header-expand">
-          <span>// SPOTIFY</span>
-          <button class="btn-subtle" id="btn-spotify-login">[CONNECT]</button>
-        </div>
-        <div class="spotify-track-info" id="spotify-track-name">
-          [NO ACTIVE PLAYBACK]
-        </div>
-        <div class="spotify-controls">
-          <button class="btn-subtle" id="sp-prev">[&lt;&lt; PREV]</button>
-          <button class="btn-subtle" id="sp-play">[PLAY/PAUSE]</button>
-          <button class="btn-subtle" id="sp-next">[NEXT &gt;&gt;]</button>
-        </div>
-        <div style="display:flex; gap:4px; margin-top:4px;">
-          <button class="btn-subtle" id="sp-vibe-warmup" style="flex:1;">[WARMUP]</button>
-          <button class="btn-subtle" id="sp-vibe-heavy" style="flex:1; font-weight:800; color:var(--white);">[WORKSET]</button>
-        </div>
-        <!-- Embed Player Quick Backup -->
-        <div id="spotify-embed-container" style="margin-top:8px;">
-          <iframe id="spotify-iframe" style="border-radius:0px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
+        <a class="spotify-link" href="https://open.spotify.com" target="_blank" rel="noopener">// SPOTIFY: OPEN APP &#8599;</a>
       </div>
 
       <!-- COLLAPSIBLE WORK SETS BREAKDOWN CARD -->
       <div class="math-card">
         <div class="math-header-expand" id="math-header-expand" onclick="toggleWorkSetsExpand()">
-          <span id="stat-total-worksets">// TOTAL WORK SETS: 0</span>
+          <span id="stat-total-worksets">// TOTAL SETS: 0</span>
           <button class="btn-subtle" id="btn-expand-worksets">[+]</button>
         </div>
         <div id="muscle-group-list" class="muscle-group-list" style="display:none;">

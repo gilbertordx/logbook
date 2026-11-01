@@ -792,3 +792,18 @@ input[type="number"] {
 .btn-start:active {
   background: var(--gray);
 }
+
+/* Spotify: a single link that opens the app */
+a.btn-subtle {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.spotify-link {
+  display: block;
+  padding: 10px 6px;
+  color: var(--white);
+  font-weight: 800;
+  text-decoration: none;
+  border: 1px solid var(--dim);
+}
