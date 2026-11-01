@@ -752,4 +752,43 @@ input[type="number"] {
     width: 100%;
     padding: 8px;
   }
+
+  /* Today's workout first on phones; calendar and extras below it */
+  .grid-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .log-panel {
+    order: -1;
+  }
+
+  .panel {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+/* Desktop: keep the calendar on the left, workout on the right */
+@media (min-width: 769px) {
+  .cal-panel  { grid-column: 1; grid-row: 1; }
+  .log-panel  { grid-column: 2; grid-row: 1; }
+}
+
+/* Start button: the first thing you tap at the gym */
+.btn-start {
+  display: block;
+  width: 100%;
+  margin: 12px 0;
+  padding: 18px 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--bg);
+  background: var(--white);
+  border: 1px solid var(--white);
+  cursor: pointer;
+}
+
+.btn-start:active {
+  background: var(--gray);
 }

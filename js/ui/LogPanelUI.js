@@ -12,6 +12,7 @@ import { save }               from '../services/StorageService.js';
 import { syncToGitHub }       from '../services/GitHubSyncService.js';
 import { triggerPersonalizedVibe } from '../services/SpotifyService.js';
 import { DEFAULT_ROUTINE }    from '../config/constants.js';
+import { formatDateKey }      from '../utils/dateUtils.js';
 import {
   calculateE1RM,
   calculateSmartTargetLoad,
@@ -212,9 +213,11 @@ export function renderSelectedDate(state, refresh) {  // eslint-disable-line no-
   renderGarminMetrics(state);
 
   if (!entry) {
+    const isToday = state.selectedDateStr === formatDateKey(new Date());
     container.innerHTML =
-      `<div class="empty-msg">[NO LOGGED SESSION FOR ${state.selectedDateStr}]<br><br>` +
-      `Click [LOAD ROUTINE] above to load exercises.</div>`;
+      `<div class="empty-msg">[NO LOGGED SESSION FOR ${state.selectedDateStr}]</div>` +
+      `<button class="btn btn-start" onclick="document.getElementById('btn-load-routine').click()">` +
+      `${isToday ? "▶ START TODAY'S WORKOUT" : '▶ START WORKOUT'}</button>`;
     actions.style.display = 'none';
     renderMuscleGroupStats(null, state.isWorkSetsExpanded);
     return;
