@@ -20,8 +20,10 @@ echo "== 3/4 build the web app"
 (cd "$ROOT/rust/web" && trunk build --release 2>&1 | grep -E "error|success")
 
 echo "== 4/4 whole app in a browser: original JS vs Rust, side by side"
-(cd "$ROOT" && python3 -m http.server 8080 --bind 127.0.0.1 >/dev/null 2>&1) &
-(cd "$ROOT/rust/web/dist" && python3 -m http.server 8081 --bind 127.0.0.1 >/dev/null 2>&1) &
+# `--directory` lets the server run as a plain background job, so the trap below kills the
+# server itself (a subshell wrapper would be killed but leave the server running).
+python3 -m http.server 8080 --bind 127.0.0.1 --directory "$ROOT" >/dev/null 2>&1 &
+python3 -m http.server 8081 --bind 127.0.0.1 --directory "$ROOT/rust/web/dist" >/dev/null 2>&1 &
 sleep 1
 NODE_PATH="$(npm root -g)" node "$ROOT/rust/tools/browser_compare.cjs" http://127.0.0.1:8080/index.html http://127.0.0.1:8081/
 echo "ALL CHECKS PASSED"
