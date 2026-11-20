@@ -1,0 +1,12 @@
+[package]
+name = "logbook-core"
+version = "0.1.0"
+edition = "2024"
+description = "Workout-log data model and training maths (no browser code)"
+
+[dependencies]
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+indexmap = { version = "2.14.2", features = ["serde"] }
+roxmltree = "0.21.2"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = { version = "1.0.154", features = ["preserve_order"] }

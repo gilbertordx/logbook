@@ -1,0 +1,6 @@
+# Two crates on purpose:
+#   core = pure logic (no browser code), testable with plain `cargo test`
+#   web  = the Leptos user interface, compiled to WebAssembly
+[workspace]
+members = ["core", "web"]
+resolver = "3"

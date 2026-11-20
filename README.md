@@ -1,5 +1,10 @@
 # Logbook
 
+> **Rust remaster on this branch.** A Rust (WebAssembly) version of Logbook lives in
+> [`rust/`](rust), with a guide for learning Rust from it in
+> [`docs/RUST_LEARNING.md`](docs/RUST_LEARNING.md). The JavaScript app below is unchanged.
+> Garmin and Spotify were intentionally not ported. Quick start: `cd rust/web && trunk serve`.
+
 Logbook is a local-first workout log implemented as a static browser application. It records exercises, sets, repetitions, weight, RIR, discomfort notes, session duration, and optional heart-rate/calorie metrics.
 
 This repository is a learning project, not a production service. The sections below distinguish implemented behavior from current limitations.
